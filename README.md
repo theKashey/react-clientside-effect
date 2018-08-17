@@ -2,26 +2,14 @@
 
 Create components whose prop changes map to a global side effect.
 
+This is client-side variation of the original react-side-effect, for client-side
+components.
+It does nothing on server side.
+
 ## Installation
 
 ```
-npm install --save react-side-effect
-```
-
-### As a script tag
-
-#### Development
-
-```
-<script src="https://unpkg.com/react/umd/react.development.js" type="text/javascript"></script>
-<script src="https://unpkg.com/react-side-effect/lib/index.umd.js" type="text/javascript"></script>
-```
-
-#### Production
-
-```
-<script src="https://unpkg.com/react/umd/react.production.min.js" type="text/javascript"></script>
-<script src="https://unpkg.com/react-side-effect/lib/index.umd.min.js" type="text/javascript"></script>
+npm install --save react-clientside-effect
 ```
 
 ## Use Cases
@@ -85,8 +73,6 @@ export default withSideEffect(
 )(BodyStyle);
 ```
 
-On the server, you’ll be able to call `BodyStyle.peek()` to get the current state, and `BodyStyle.rewind()` to reset for each next request. The `handleStateChangeOnClient` will only be called on the client.
-
 ## API
 
 #### `withSideEffect: (reducePropsToState, handleStateChangeOnClient, [mapStateOnServer]) -> ReactComponent -> ReactComponent`
@@ -94,10 +80,6 @@ On the server, you’ll be able to call `BodyStyle.peek()` to get the current st
 A [higher-order component](https://medium.com/@dan_abramov/mixins-are-dead-long-live-higher-order-components-94a0d2f9e750) that, when mounting, unmounting or receiving new props, calls `reducePropsToState` with `props` of **each mounted instance**. It is up to you to return some state aggregated from these props.
 
 On the client, every time the returned component is (un)mounted or its props change, `reducePropsToState` will be called, and the recalculated state will be passed to `handleStateChangeOnClient` where you may use it to trigger a side effect.
-
-On the server, `handleStateChangeOnClient` will not be called. You will still be able to call the static `rewind()` method on the returned component class to retrieve the current state after a `renderToString()` call. If you forget to call `rewind()` right after `renderToString()`, the internal instance stack will keep growing, resulting in a memory leak and incorrect information. You must call `rewind()` after every `renderToString()` call on the server.
-
-For testing, you may use a static `peek()` method available on the returned component. It lets you get the current state without resetting the mounted instance stack. Don’t use it for anything other than testing.
 
 ## Usage
 
@@ -138,3 +120,4 @@ export default withSideEffect(
   handleStateChangeOnClient
 )(DocumentTitle);
 ```
+
