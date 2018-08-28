@@ -6,7 +6,8 @@ const { mount } = require('enzyme')
 const { renderToStaticMarkup } = require('react-dom/server')
 const { render } = require('react-dom')
 
-const withSideEffect = require('../src');
+//const withSideEffect = require('../src');
+const {default: withSideEffect, useNode} = require('../src');
 
 function noop() { }
 const identity = x => x
@@ -62,6 +63,42 @@ describe('react-side-effect', () => {
     });
   });
 
+  describe('Server SideEffect component', () => {
+    class DummyComponent extends React.Component {
+      render() {
+        return <div>hello {this.props.foo}</div>
+      }
+    };
+
+    const withIdentitySideEffect = withSideEffect(identity, noop);
+    let SideEffect;
+
+    beforeEach(() => {
+      useNode(true);
+      SideEffect = withIdentitySideEffect(DummyComponent);
+    });
+
+    afterEach(() => {
+      useNode(true);
+    });
+
+    describe('peek', () => {
+      it('should return the current state', () => {
+        mount(<SideEffect foo="bar"/>);
+        expect(SideEffect.peek()).to.equal(undefined);
+        expect(SideEffect.instances()).to.have.length(0);
+      });
+
+      it('should NOT reset the state', () => {
+        mount(<SideEffect foo="bar"/>);
+
+        SideEffect.peek();
+        expect(SideEffect.peek()).to.equal(undefined)
+        expect(SideEffect.instances()).to.have.length(0);
+      });
+    });
+  });
+
   describe('SideEffect component', () => {
     class DummyComponent extends React.Component {
       render () {
@@ -73,13 +110,19 @@ describe('react-side-effect', () => {
     let SideEffect;
 
     beforeEach(() => {
+      useNode(false);
       SideEffect = withIdentitySideEffect(DummyComponent);
+    });
+
+    afterEach( () => {
+      useNode(true);
     });
 
     describe('peek', () => {
       it('should return the current state', () => {
         mount(<SideEffect foo="bar"/>);
         expect(SideEffect.peek()).to.deep.equal([{foo: 'bar'}]);
+        expect(SideEffect.instances()).to.have.length(1);
       });
 
       it('should NOT reset the state', () => {
@@ -89,6 +132,7 @@ describe('react-side-effect', () => {
         const state = SideEffect.peek();
 
         expect(state).to.deep.equal([{foo: 'bar'}]);
+        expect(SideEffect.instances()).to.have.length(1);
       });
     });
 

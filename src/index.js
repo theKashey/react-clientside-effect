@@ -1,5 +1,9 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
+import isNode from 'detect-node';
 import shallowEqual from 'shallowequal';
+
+let couldUseSideEffect = !isNode;
+export const useNode = flag => couldUseSideEffect = !flag;
 
 export default function withSideEffect(
   reducePropsToState,
@@ -40,13 +44,19 @@ export default function withSideEffect(
         return state;
       }
 
+      static instances() {
+        return mountedInstances;
+      }
+
       shouldComponentUpdate(nextProps) {
         return !shallowEqual(nextProps, this.props);
       }
 
-      componentDidMount() {
-        mountedInstances.push(this);
-        emitChange();
+      componentWillMount() {
+        if (couldUseSideEffect) {
+          mountedInstances.push(this);
+          emitChange();
+        }
       }
 
       componentDidUpdate() {
@@ -55,8 +65,10 @@ export default function withSideEffect(
 
       componentWillUnmount() {
         const index = mountedInstances.indexOf(this);
-        mountedInstances.splice(index, 1);
-        emitChange();
+        if (index >= 0) {
+          mountedInstances.splice(index, 1);
+          emitChange();
+        }
       }
 
       render() {
