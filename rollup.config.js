@@ -15,9 +15,10 @@ const config = {
   },
   plugins: [
     babel({
+      runtimeHelpers: true,
       babelrc: false,
       presets: ['react', ['env', { loose: true, modules: false }]],
-      plugins: ['transform-object-rest-spread', 'transform-class-properties'],
+      plugins: ['transform-runtime','transform-object-rest-spread', 'transform-class-properties'],
       exclude: 'node_modules/**',
     }),
   ],
