@@ -17,8 +17,8 @@ const config = {
     babel({
       runtimeHelpers: true,
       babelrc: false,
-      presets: ['react', ['env', { loose: true, modules: false }]],
-      plugins: ['transform-runtime','transform-object-rest-spread', 'transform-class-properties'],
+      presets: ['@babel/preset-react', ['@babel/preset-env', { loose: true, modules: false }]],
+      plugins: ['@babel/plugin-transform-runtime','@babel/plugin-proposal-object-rest-spread', '@babel/plugin-proposal-class-properties'],
       exclude: 'node_modules/**',
     }),
   ],

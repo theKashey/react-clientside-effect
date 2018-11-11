@@ -1,15 +1,17 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import shallowEqual from 'shallowequal';
 
 export default function withSideEffect(
   reducePropsToState,
   handleStateChangeOnClient
 ) {
-  if (typeof reducePropsToState !== 'function') {
-    throw new Error('Expected reducePropsToState to be a function.');
-  }
-  if (typeof handleStateChangeOnClient !== 'function') {
-    throw new Error('Expected handleStateChangeOnClient to be a function.');
+  if (process.env.NODE_ENV !== "production") {
+    if (typeof reducePropsToState !== 'function') {
+      throw new Error('Expected reducePropsToState to be a function.');
+    }
+    if (typeof handleStateChangeOnClient !== 'function') {
+      throw new Error('Expected handleStateChangeOnClient to be a function.');
+    }
   }
 
   function getDisplayName(WrappedComponent) {
@@ -17,8 +19,10 @@ export default function withSideEffect(
   }
 
   return function wrap(WrappedComponent) {
-    if (typeof WrappedComponent !== 'function') {
-      throw new Error('Expected WrappedComponent to be a React component.');
+    if (process.env.NODE_ENV !== "production") {
+      if (typeof WrappedComponent !== 'function') {
+        throw new Error('Expected WrappedComponent to be a React component.');
+      }
     }
 
     let mountedInstances = [];
