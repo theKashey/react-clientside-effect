@@ -1,5 +1,4 @@
-import React, {Component} from 'react';
-import shallowEqual from 'shallowequal';
+import React, {PureComponent} from 'react';
 
 export default function withSideEffect(
   reducePropsToState,
@@ -36,16 +35,12 @@ export default function withSideEffect(
       handleStateChangeOnClient(state);
     }
 
-    class SideEffect extends Component {
+    class SideEffect extends PureComponent {
       // Try to use displayName of wrapped component
       static displayName = `SideEffect(${getDisplayName(WrappedComponent)})`;
 
       static peek() {
         return state;
-      }
-
-      shouldComponentUpdate(nextProps) {
-        return !shallowEqual(nextProps, this.props);
       }
 
       componentDidMount() {

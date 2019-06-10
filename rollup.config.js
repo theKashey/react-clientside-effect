@@ -22,7 +22,7 @@ const config = {
       exclude: 'node_modules/**',
     }),
   ],
-  external: ['shallowequal', 'react', 'exenv'],
+  external: ['react', 'exenv'],
 }
 
 if (BUILD_FORMAT === 'umd') {
