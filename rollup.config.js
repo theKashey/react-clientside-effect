@@ -1,7 +1,6 @@
 import babel from 'rollup-plugin-babel'
 import uglify from 'rollup-plugin-uglify'
 import resolve from 'rollup-plugin-node-resolve'
-import commonjs from 'rollup-plugin-commonjs'
 
 const { BUILD_ENV, BUILD_FORMAT } = process.env
 
@@ -17,8 +16,17 @@ const config = {
     babel({
       runtimeHelpers: true,
       babelrc: false,
-      presets: ['@babel/preset-react', ['@babel/preset-env', { loose: true, modules: false }]],
-      plugins: ['@babel/plugin-transform-runtime','@babel/plugin-proposal-object-rest-spread', '@babel/plugin-proposal-class-properties'],
+      presets: [
+        '@babel/preset-react',
+        ['@babel/preset-env', { loose: true, modules: false }]
+      ],
+      plugins: [
+        ['@babel/plugin-transform-runtime', {
+          useESModules: BUILD_FORMAT === 'es' || BUILD_FORMAT === 'umd'
+        }],
+        '@babel/plugin-proposal-object-rest-spread',
+        '@babel/plugin-proposal-class-properties'
+      ],
       exclude: 'node_modules/**',
     }),
   ],
@@ -31,9 +39,6 @@ if (BUILD_FORMAT === 'umd') {
   config.external = ['react']
   config.plugins.push(
     resolve(),
-    commonjs({
-      include: /node_modules/,
-    }),
   )
 }
 
